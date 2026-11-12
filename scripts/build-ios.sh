@@ -31,6 +31,14 @@ xcodebuild \
 
 app_path="$build_dir/DerivedData/Build/Products/Release-iphoneos/App.app"
 test -d "$app_path"
+app_name_pattern='^[A-Za-z0-9][A-Za-z0-9 ._-]*$'
+for name_key in CFBundleName CFBundleDisplayName; do
+  app_name="$(/usr/libexec/PlistBuddy -c "Print :$name_key" "$app_path/Info.plist")"
+  if [[ ! "$app_name" =~ $app_name_pattern ]]; then
+    echo "$name_key must use an ASCII name for iloader provisioning. Put translated names in InfoPlist.strings." >&2
+    exit 1
+  fi
+done
 mkdir -p "$build_dir/Payload"
 ditto "$app_path" "$build_dir/Payload/App.app"
 ditto -c -k --keepParent "$build_dir/Payload" "$ipa_path"

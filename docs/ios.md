@@ -29,6 +29,14 @@ iOS 版本号与构建号在 `npm run ios:sync` 时从 `package.json` 同步。
 覆盖安装时使用同一个 Apple ID，并保持相同的应用标识；安装前可以在“我的”页面导出备份。
 设备提醒、键盘和备份分享需要在实际 iPhone 上验证。
 
+### appIdName 注册错误
+
+部分侧载工具会将 `Info.plist` 中的应用名称作为 Apple 注册接口的 `appIdName`，中文名称可能被拒绝。
+安装包基础字段 `CFBundleName` 和 `CFBundleDisplayName` 使用英文 `Planner`；
+中文桌面名称通过 `zh-Hans.lproj/InfoPlist.strings` 显示为“每日计划”。
+打包脚本会检查基础名称，避免重新生成无法注册的中文 `appIdName`。
+遇到 `An invalid value ... appIdName` 时，请重新导入修复后的 IPA。
+
 ## 在 Mac 本地打包
 
 安装 Xcode 26、对应的 iOS 平台组件及 Node.js 24，然后运行：
