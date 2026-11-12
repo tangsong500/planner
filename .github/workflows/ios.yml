@@ -1,0 +1,57 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ios.yml'
+      - 'ios/**'
+      - 'src/**'
+      - 'scripts/build-ios.sh'
+      - 'scripts/ios-version.mjs'
+      - 'package*.json'
+      - 'capacitor.config.json'
+      - 'vite.config.js'
+      - 'index.html'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Unsigned IPA for iloader
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Select Xcode 26
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.app/Contents/Developer
+      - run: npm ci
+      - name: Build web assets and unsigned iOS app
+        run: npm run ios:ipa
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: planner-ios-unsigned
+          path: |
+            artifacts/ios/*.ipa
+            artifacts/ios/*.sha256
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload Xcode build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-log
+          path: artifacts/ios/xcodebuild.log
+          if-no-files-found: ignore
+          retention-days: 7

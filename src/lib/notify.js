@@ -95,14 +95,16 @@ export function scheduleSync() {
 // onOpen(taskId, occ)：点了通知
 export async function initReminders(onOpen) {
   if (!native) return;
-  await LocalNotifications.createChannel({
-    id: 'reminders',
-    name: '任务提醒',
-    description: '到点提醒设了时间的任务',
-    importance: 5,
-    visibility: 1,
-    vibration: true,
-  });
+  if (Capacitor.getPlatform() === 'android') {
+    await LocalNotifications.createChannel({
+      id: 'reminders',
+      name: '任务提醒',
+      description: '到点提醒设了时间的任务',
+      importance: 5,
+      visibility: 1,
+      vibration: true,
+    });
+  }
   notifyState.permission = (await LocalNotifications.checkPermissions()).display;
   LocalNotifications.addListener('localNotificationActionPerformed', (a) => {
     const { id, occ } = a.notification.extra ?? {};

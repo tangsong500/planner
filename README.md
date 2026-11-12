@@ -1,7 +1,7 @@
 # 每日计划 (planner)
 
-A lightweight Android daily planner: calendar (with lunar calendar & Chinese public holidays) + Eisenhower matrix.
-Vue 3 + Vite, packaged as an Android app with Capacitor 8.
+A lightweight daily planner for Android and iOS: calendar (with lunar calendar & Chinese public holidays) + Eisenhower matrix.
+Vue 3 + Vite, packaged as native apps with Capacitor 8.
 
 ## Develop
 
@@ -27,6 +27,16 @@ which points at the keystore and holds its passwords. Neither is in the repo —
 without the same key, a new build can't be installed over the old one.
 
 Requires JDK 21 and an Android SDK (`android/local.properties` points at `~/Library/Android/sdk`).
+
+## iOS / iloader
+
+See [iOS build and installation](docs/ios.md) for the Windows → GitHub Actions → iloader workflow.
+The `Build iOS IPA` workflow builds an unsigned device IPA on macOS without Apple credentials or signing secrets.
+Download the `planner-ios-unsigned` artifact, extract the `.ipa`, and import it into iloader to sign and install on an iPhone.
+
+On a Mac with Xcode 26 and Node.js 24, run `npm ci && npm run ios:ipa`.
+The result is `artifacts/ios/planner-<version>-unsigned.ipa`. Use `npm run ios:open` to open the project in Xcode.
+iOS requires version 15 or later. Its app version and build number are synchronized from `package.json` during `ios:sync`.
 
 ## Layout
 

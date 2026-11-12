@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { App as CapApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import Icon from './components/Icon.vue';
 import QuickAdd from './components/QuickAdd.vue';
 import TaskDetail from './components/TaskDetail.vue';
@@ -37,11 +38,13 @@ const openSearch = () => (searchOpen.value = true);
 
 onMounted(() => {
   // 安卓返回键：先关弹窗，再回日程页，最后退到后台
-  CapApp.addListener('backButton', () => {
-    if (handleBack()) return;
-    if (tab.value !== 'calendar') tab.value = 'calendar';
-    else CapApp.minimizeApp();
-  });
+  if (Capacitor.getPlatform() === 'android') {
+    CapApp.addListener('backButton', () => {
+      if (handleBack()) return;
+      if (tab.value !== 'calendar') tab.value = 'calendar';
+      else CapApp.minimizeApp();
+    });
+  }
   CapApp.addListener('pause', flush);
   // 隔天再打开时，“今天”已经变了，直接刷新
   const day = today();

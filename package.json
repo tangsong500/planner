@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
+    "ios:sync": "npm run build && cap sync ios && node scripts/ios-version.mjs",
+    "ios:open": "npm run ios:sync && cap open ios",
+    "ios:ipa": "npm run ios:sync && bash scripts/build-ios.sh",
     "apk": "vite build && cap sync android && cd android && ./gradlew assembleDebug",
     "release": "vite build && cap sync android && cd android && ./gradlew assembleRelease",
     "install-release": "$HOME/platform-tools/adb install -r android/app/build/outputs/apk/release/app-release.apk",
@@ -17,6 +20,7 @@
     "@capacitor/core": "^8.6.0",
     "@capacitor/filesystem": "^8.1.5",
     "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.6.0",
     "@capacitor/keyboard": "^8.0.6",
     "@capacitor/local-notifications": "^8.3.1",
     "@capacitor/preferences": "^8.0.1",

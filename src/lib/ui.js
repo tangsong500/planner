@@ -1,6 +1,7 @@
 import { reactive, watchEffect } from 'vue';
 import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
+import { Keyboard } from '@capacitor/keyboard';
 
 // ---- 触感反馈（只在手机上生效） ----
 const native = Capacitor.isNativePlatform();
@@ -83,7 +84,21 @@ function recalc() {
 }
 window.addEventListener('resize', recalc);
 vv?.addEventListener('scroll', recalc);
-if (native) {
+if (Capacitor.getPlatform() === 'ios') {
+  const updateKeyboard = (height) => {
+    const inset = document.createElement('div');
+    inset.style.paddingBottom = 'var(--sab)';
+    root.append(inset);
+    const bottom = parseFloat(getComputedStyle(inset).paddingBottom) || 0;
+    inset.remove();
+    keyboard.height = Math.max(0, height - bottom);
+    recalc();
+  };
+  Keyboard.addListener('keyboardWillShow', ({ keyboardHeight }) => updateKeyboard(keyboardHeight));
+  Keyboard.addListener('keyboardDidShow', ({ keyboardHeight }) => updateKeyboard(keyboardHeight));
+  Keyboard.addListener('keyboardWillHide', () => updateKeyboard(0));
+  Keyboard.addListener('keyboardDidHide', () => updateKeyboard(0));
+} else if (native) {
   window.__ime = (h, animating) => {
     keyboard.height = h;
     keyboard.snap = animating;
